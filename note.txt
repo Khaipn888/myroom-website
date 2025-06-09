@@ -1,0 +1,8 @@
+- thêm chức năng lưu nháp
+- thêm chức năng thông báo
+- thêm chức năng sửa xoá bài viết
+- thêm chức năng quên mật khẩu
+- thêm chức năng quản lý người dùng
+- check update thông tin trước khi tạo nhà trọ
+- check update viết thêm api tìm tin đăng mới nhất
+- Update ui cài đặt tài khoản cá nhân
