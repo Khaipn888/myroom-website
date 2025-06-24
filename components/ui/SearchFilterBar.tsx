@@ -191,6 +191,7 @@ export default function SearchFilterBar({
         // concat và set
         setOptions([...local, ...remote]);
       }, 300),
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     [selectedProvince, locationMap]
   );
 
@@ -233,7 +234,7 @@ export default function SearchFilterBar({
         </Space.Compact>
       </div>
 
-      <div className="flex lg:col-span-3 gap-2 justify-between mr-4">
+      <div className="flex ml-4 lg:ml-0 lg:col-span-3 gap-2 justify-between mr-4">
         <Button
           onClick={() => setIsFilterOpen(true)}
           icon={<FilterOutlined />}

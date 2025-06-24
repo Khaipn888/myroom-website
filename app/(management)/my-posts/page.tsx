@@ -13,12 +13,15 @@ import {
   Spin,
 } from "antd";
 import { getAllMyPosts, getSearchSuggestions } from "@/api/user";
+import { deletePost } from "@/api/post";
 import { useQuery, keepPreviousData } from "@tanstack/react-query";
 import debounce from "lodash/debounce";
+import { useRouter } from "next/navigation";
 
 // Import PostCard mới của bạn
 import PostCard from "@/components/ui/PostCard";
 import { SearchOutlined } from "@ant-design/icons";
+import { toast } from "react-toastify";
 
 const { Option } = Select;
 const { Text } = Typography;
@@ -32,9 +35,13 @@ const PostManagementPage = () => {
   const [sort, setSort] = useState<string>("createdAt:desc");
   const [currentPage, setCurrentPage] = useState<number>(1);
   const pageSize = 8;
-
+  const router = useRouter();
   // Lấy danh sách bài đăng của chính user
-  const { data: myPosts, isLoading } = useQuery<any>({
+  const {
+    data: myPosts,
+    isLoading,
+    refetch,
+  } = useQuery<any>({
     queryKey: ["getAllMyPosts", keyword, status, type, sort, currentPage],
     queryFn: () =>
       getAllMyPosts({
@@ -64,6 +71,20 @@ const PostManagementPage = () => {
       }, 300),
     []
   );
+  const handleDeletePost = async (id: string) => {
+    try {
+      await deletePost(id);
+      toast.success("Đã xoá thành công");
+      refetch();
+    } catch (error) {
+      console.log(error);
+      toast.error("Xoá tin đăng thất bại, vui lòng thử lại sau.");
+    }
+  };
+
+  const handleEditPost = (id: string) => {
+    router.push(`/post/edit/${id}`);
+  };
 
   return (
     <div style={{ padding: 24, backgroundColor: "white" }}>
@@ -110,7 +131,9 @@ const PostManagementPage = () => {
           >
             <Option value="actived">Đã duyệt</Option>
             <Option value="pending">Chờ duyệt</Option>
-            <Option value="reject">Không được duyệt</Option>
+            <Option value="reject">Bị từ chối</Option>
+            <Option value="disabled">Vô hiệu hoá</Option>
+            <Option value="draft">Nháp</Option>
           </Select>
         </Col>
 
@@ -175,17 +198,9 @@ const PostManagementPage = () => {
           myPosts?.data?.posts?.map((post: any) => (
             <Col key={post.id} xs={24} sm={24} lg={24} xxl={12}>
               <PostCard
-                id={post.id}
-                title={post.title}
-                price={post.price}
-                area={post.area}
-                address={post.address}
-                media={post.media}
-                userId={post.userId}
-                contactPhone={post.contactPhone}
-                createdAt={post.createdAt}
-                utilities={post.utilities}
-                status={post.status}
+                cardValues={post}
+                handleDeletePost={handleDeletePost}
+                handleEditPost={handleEditPost}
               />
             </Col>
           ))
@@ -193,15 +208,17 @@ const PostManagementPage = () => {
       </Row>
 
       {/* ---------- Pagination ---------- */}
-      <Row justify="center" style={{ marginTop: 24 }}>
-        <Pagination
-          current={currentPage}
-          pageSize={pageSize}
-          total={myPosts?.data?.pagination?.total || 0}
-          onChange={(page) => setCurrentPage(page)}
-          showSizeChanger={false}
-        />
-      </Row>
+      {myPosts?.data?.pagination?.total > 15 && (
+        <Row justify="center" style={{ marginTop: 24 }}>
+          <Pagination
+            current={currentPage}
+            pageSize={pageSize}
+            total={myPosts?.data?.pagination?.total || 0}
+            onChange={(page) => setCurrentPage(page)}
+            showSizeChanger={false}
+          />
+        </Row>
+      )}
     </div>
   );
 };

@@ -35,12 +35,6 @@ export default function HeaderComponent({
 }: HeaderComponentProps) {
   const { user } = useUserStore();
   const { handleLogout } = useAuth();
-  // const menuItems = [
-  //   { key: "rent", label: <Link href="#rent">Phòng cho thuê</Link> },
-  //   { key: "share", label: <Link href="#share">Ở ghép</Link> },
-  //   { key: "pass", label: <Link href="#pass">Đồ pass lại</Link> },
-  //   { key: "myroom", label: <Link href="#myroom">Phòng trọ của tôi</Link> },
-  // ];
 
   const userMenuItems = [
     {
@@ -58,7 +52,36 @@ export default function HeaderComponent({
       icon: <HomeOutlined />,
       label: <Link href="/my-hostel">Phòng trọ của tôi</Link>,
     },
-        {
+    {
+      key: "setting",
+      icon: <SettingOutlined />,
+      label: <Link href="/account-setting">Cài đặt thông tin cá nhân</Link>,
+    },
+    {
+      key: "logout",
+      icon: <LogoutOutlined />,
+      label: "Đăng xuất",
+      onClick: handleLogout,
+    },
+  ];
+
+  const userMenuItemsAdmin = [
+    {
+      key: "my-posts",
+      icon: <ContainerOutlined />,
+      label: <Link href="/my-posts">Tin đăng của tôi</Link>,
+    },
+    {
+      key: "saved-posts",
+      icon: <HeartOutlined />,
+      label: <Link href="/saved-posts">Tin đã lưu</Link>,
+    },
+    {
+      key: "my-room",
+      icon: <HomeOutlined />,
+      label: <Link href="/my-hostel">Phòng trọ của tôi</Link>,
+    },
+    {
       key: "posts-management",
       icon: <FileProtectOutlined />,
       label: <Link href="/posts-management">Quản lý tin đăng</Link>,
@@ -66,7 +89,7 @@ export default function HeaderComponent({
     {
       key: "setting",
       icon: <SettingOutlined />,
-      label: <Link href="/account-setting">Cài đặt tài khoản</Link>,
+      label: <Link href="/account-setting">Cài đặt thông tin cá nhân</Link>,
     },
     {
       key: "logout",
@@ -94,15 +117,6 @@ export default function HeaderComponent({
           alt="Phong tro cua toi"
         />
       </Link>
-
-      {/* Navigation */}
-      {/* <Menu
-        mode="horizontal"
-        items={menuItems}
-        className="flex-1 ml-8 font-semibold"
-        style={{ borderBottom: "none" }}
-      /> */}
-
       {/* Right section */}
       <div className="flex items-center gap-4">
         {/* Thông báo */}
@@ -116,7 +130,12 @@ export default function HeaderComponent({
 
         {/* Người dùng hoặc đăng nhập */}
         {user ? (
-          <Dropdown menu={{ items: userMenuItems }} placement="bottomRight">
+          <Dropdown
+            menu={{
+              items: user.role === "admin" ? userMenuItemsAdmin : userMenuItems,
+            }}
+            placement="bottomRight"
+          >
             <div className="flex items-center gap-2 cursor-pointer">
               <Avatar src={user?.avatar} icon={<UserOutlined />} />
               <span>{user?.name}</span>
@@ -129,11 +148,6 @@ export default function HeaderComponent({
             </Link>
           </Button>
         )}
-
-        {/* Đăng tin */}
-        {/* <Button type="primary" icon={<PlusCircleOutlined />} onClick={onPost}>
-          <span className="font-semibold">Đăng tin</span>
-        </Button> */}
         <PostButton user={user} />
       </div>
     </Header>

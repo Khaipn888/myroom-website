@@ -221,7 +221,7 @@ export default function Home() {
         <div className="flex-1 lg:col-span-7">
           {renderHeader(false, listAllPosts?.data?.appliedFilters || [])}
           <div className="flex justify-center items-center w-full min-h-48 bg-white rounded-lg mb-5">
-            <Spin spinning={isLoading} tip="Đang tải tin đăng...">
+            <Spin spinning={isLoading}>
               {listAllPosts?.data?.suggested ? (
                 <EmptyState
                   message={`Không có kết quả nào phù hợp`}
@@ -230,7 +230,7 @@ export default function Home() {
                 />
               ) : (
                 listAllPosts?.data?.posts?.map((item: any) => (
-                  <PostCard key={item.id} {...item} />
+                  <PostCard key={item.id} cardValues={item} />
                 ))
               )}
             </Spin>

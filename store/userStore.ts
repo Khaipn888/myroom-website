@@ -8,6 +8,7 @@ interface UserState {
     email?: string;
     role: string;
     avatar?: string;
+    code?: string;
     phone?: string;
     address?: string;
     savedPosts?: string[]
