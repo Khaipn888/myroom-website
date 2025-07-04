@@ -1,5 +1,5 @@
 "use client";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   Form,
   Input,
@@ -17,9 +17,10 @@ import Uploader from "@/components/ui/Uploader";
 import dynamic from "next/dynamic";
 import { useCallback } from "react";
 import { debounce } from "lodash";
-import { createPost, saveDraft } from "@/api/post";
+import { updatePost, getMyDetailPost } from "@/api/post";
 import { toast } from "react-toastify";
-import { useRouter } from "next/navigation";
+import { useParams, useRouter } from "next/navigation";
+import { keepPreviousData, useQuery } from "@tanstack/react-query";
 // Tải MapPicker động để tránh lỗi SSR
 const MapPicker = dynamic(() => import("@/components/ui/maps/MapPicker"), {
   ssr: false,
@@ -74,6 +75,8 @@ const utilitiesOptions = [
 ];
 
 export default function PostRoomForm() {
+  const params = useParams();
+  const id = params.id;
   const [form] = Form.useForm<FormValues>();
   const [addressOptions, setAddressOptions] = useState<{ value: string }[]>([]);
   const [selectedLocation, setSelectedLocation] = useState<{
@@ -88,9 +91,56 @@ export default function PostRoomForm() {
   } | null>(null);
   const [isChooseOnMap, setIsChooseOnMap] = useState(false);
   const [loadingSubmit, setLoadingSubmit] = useState(false);
-  const [loadingSubmitDraft, setLoadingSubmitDraft] = useState(false);
   const router = useRouter();
 
+  const { data: myPostDetail } = useQuery<any>({
+    queryKey: ["getMyDetailPost", id],
+    queryFn: () => getMyDetailPost(id as string),
+    placeholderData: keepPreviousData,
+    staleTime: 1000 * 60,
+  });
+
+  useEffect(() => {
+    if (myPostDetail) {
+      const {
+        type,
+        title,
+        price,
+        area,
+        address,
+        location,
+        media,
+        utilities,
+        description,
+        peoplePerRoom,
+        services,
+        contactName,
+        contactPhone,
+        contactZalo,
+      } = myPostDetail?.data;
+      setSelectedLocation({
+        ...location,
+        address,
+      });
+      form.setFieldsValue({
+        type,
+        title,
+        price,
+        area,
+        address,
+        location,
+        media,
+        utilities,
+        description,
+        peoplePerRoom,
+        services,
+        contactName,
+        contactPhone,
+        contactZalo,
+      });
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [myPostDetail]);
   const handleSubmit = async (values: FormValues) => {
     try {
       setLoadingSubmit(true);
@@ -98,40 +148,13 @@ export default function PostRoomForm() {
         ...values,
         location: isChooseOnMap ? selectLocationOnMap : selectedLocation,
       };
-      await createPost(payload);
-      toast.success("Tin đã được tạo thành công");
+      await updatePost(id, payload);
+      toast.success("Tin đã được cập nhập thành công");
       router.push("/my-posts");
-      form.resetFields();
     } catch (err: any) {
-      toast.error(err.message || "Đăng tin thất bại");
+      toast.error(err.message || "Cập nhập tin thất bại");
     } finally {
       setLoadingSubmit(false);
-    }
-  };
-
-  const handleSubmitDraft = async () => {
-    try {
-      setLoadingSubmitDraft(true);
-      let payload;
-      await form
-        .validateFields()
-        .then((values) => {
-          payload = {
-            ...values,
-            location: isChooseOnMap ? selectLocationOnMap : selectedLocation,
-          };
-        })
-        .catch(() => {
-          toast.error("Vui lòng nhập đủ thông tin");
-        });
-      await saveDraft(payload);
-      toast.success("Tin đã được lưu thành công");
-      form.resetFields();
-      router.push("/my-posts");
-    } catch (err: any) {
-      toast.error(err.message || "Lưu tin thất bại");
-    } finally {
-      setLoadingSubmitDraft(false);
     }
   };
 
@@ -362,11 +385,7 @@ export default function PostRoomForm() {
 
                   <Col span={2} className="flex items-center justify-center">
                     {index > 1 && (
-                      <Button
-                        danger
-                        type="link"
-                        onClick={() => remove(key)}
-                      >
+                      <Button danger type="link" onClick={() => remove(key)}>
                         Xoá
                       </Button>
                     )}
@@ -445,7 +464,6 @@ export default function PostRoomForm() {
           </Form.Item>
         </Col>
       </Row>
-      <div className="sm:grid sm:grid-cols-2 gap-5 w-full">
         <Form.Item>
           <Button
             type="primary"
@@ -457,18 +475,6 @@ export default function PostRoomForm() {
             Đăng tin
           </Button>
         </Form.Item>
-        <Form.Item>
-          <Button
-            onClick={handleSubmitDraft}
-            color="cyan"
-            loading={loadingSubmitDraft}
-            disabled={loadingSubmitDraft}
-            block
-          >
-            Lưu nháp
-          </Button>
-        </Form.Item>
-      </div>
     </Form>
   );
 }

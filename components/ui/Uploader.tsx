@@ -1,18 +1,19 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import Image from "next/image";
 import { toast } from "react-toastify";
 
 interface UploaderProps {
   maxCount?: number;
+  value?: string[];
   onChange?: (urls: string[]) => void;
 }
 
 type MediaFile = {
-  file: File;
+  file: File | null;
   previewUrl: string;
-  type: "image" | "video";
+  type: string;
 };
 
 const uploadToCloudinary = async (file: File): Promise<string> => {
@@ -40,11 +41,19 @@ const uploadToCloudinary = async (file: File): Promise<string> => {
   return data.secure_url;
 };
 
-const Uploader: React.FC<UploaderProps> = ({ maxCount = 8, onChange }) => {
+const Uploader: React.FC<UploaderProps> = ({ maxCount = 8, value = [], onChange }) => {
   const [mediaList, setMediaList] = useState<MediaFile[]>([]);
   const [preview, setPreview] = useState<MediaFile | null>(null);
   const [uploading, setUploading] = useState(false);
 
+  useEffect(() => {
+    const initial = value.map((url) => ({
+      file: null!, // chỉ để render preview
+      previewUrl: url,
+      type: /\.(mp4|webm|ogg)$/i.test(url) ? "video" : "image",
+    }));
+    setMediaList(initial);
+  }, [value]);
   const handleFiles = async (event: React.ChangeEvent<HTMLInputElement>) => {
     setUploading(true);
     const files = Array.from(event.target.files || []);

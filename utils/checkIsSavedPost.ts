@@ -7,8 +7,6 @@ import { useUserStore } from "../store/userStore";
  */
 export function checkIsSavedPost(postId: string): boolean {
   const user = useUserStore.getState().user;
-  console.log("user", user);
-  console.log("result", user?.savedPosts?.includes(postId));
   if (!user || !user.savedPosts) {
       return false;
     }

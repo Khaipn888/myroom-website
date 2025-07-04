@@ -12,9 +12,14 @@ import { GiPriceTag } from "react-icons/gi";
 import dayjs from "dayjs";
 import relativeTime from "dayjs/plugin/relativeTime";
 import "dayjs/locale/vi";
-import { HeartFilled, HeartOutlined } from "@ant-design/icons";
+import {
+  DeleteOutlined,
+  EditOutlined,
+  HeartFilled,
+  HeartOutlined,
+} from "@ant-design/icons";
 import Link from "next/link";
-import { Button, Tooltip } from "antd";
+import { Button, Popconfirm, Space, Tooltip } from "antd";
 import { checkIsSavedPost } from "@/utils/checkIsSavedPost";
 import { useUserStore } from "@/store/userStore";
 import { savePost, unsavePost } from "@/api/user";
@@ -22,8 +27,7 @@ import ModalLoginRequire from "@/components/ui/ModalLoginRequire";
 
 dayjs.extend(relativeTime);
 dayjs.locale("vi");
-
-interface PostCardProps {
+interface PostCardValues {
   id: string;
   title: string;
   price: number;
@@ -34,21 +38,32 @@ interface PostCardProps {
   contactPhone: string;
   createdAt: string;
   utilities?: string[];
-  status?: "pending" | "actived" | "reject";
+  status?: "pending" | "actived" | "reject" | "draft" | "disabled";
+}
+
+interface PostCardProps {
+  cardValues: PostCardValues;
+  handleDeletePost?: (id: string) => void;
+  handleEditPost?: (id: string) => void;
 }
 
 const PostCard: React.FC<PostCardProps> = ({
-  id,
-  title,
-  price,
-  area,
-  address,
-  media,
-  userId,
-  createdAt,
-  utilities = [],
-  status,
+  cardValues,
+  handleDeletePost,
+  handleEditPost,
 }) => {
+  const {
+    id,
+    title,
+    price,
+    area,
+    address,
+    media,
+    userId,
+    createdAt,
+    utilities = [],
+    status,
+  } = cardValues;
   const imageUrl = media?.[0] || "/placeholder.png";
   const totalImages = media?.length || 0;
   const [isModalVisible, setIsModalVisible] = useState(false);
@@ -89,25 +104,31 @@ const PostCard: React.FC<PostCardProps> = ({
       case "pending":
         return (
           <span className="px-2 py-0.5 bg-yellow-100 text-yellow-800 text-xs font-semibold rounded-full">
-            Chưa được duyệt
+            Chờ duyệt
           </span>
         );
       case "actived":
         return (
           <span className="px-2 py-0.5 bg-green-100 text-green-800 text-xs font-semibold rounded-full">
-            Đã được duyệt
+            Đã duyệt
           </span>
         );
       case "reject":
         return (
           <span className="px-2 py-0.5 bg-red-100 text-red-800 text-xs font-semibold rounded-full">
-            Từ chối
+            Bị từ chối
           </span>
         );
       case "disabled":
         return (
           <span className="px-2 py-0.5 bg-gray-100 text-gray-800 text-xs font-semibold rounded-full">
             Vô hiệu hoá
+          </span>
+        );
+      case "draft":
+        return (
+          <span className="px-2 py-0.5 bg-gray-200 text-gray-900 text-xs font-semibold rounded-full">
+            Nháp
           </span>
         );
       default:
@@ -118,7 +139,7 @@ const PostCard: React.FC<PostCardProps> = ({
   return (
     <div className="rounded-lg overflow-hidden shadow hover:shadow-lg transition bg-white max-w-[800px] md:p-4 mb-2">
       <div className="md:grid md:grid-cols-2 md:gap-3">
-        <Link href={`/phong-tro/${id}`}>
+        <Link href={status === "draft" ? `/post/edit/${id}`: `/phong-tro/${id}`}>
           <div className="relative min-h-48 h-48 w-full cursor-pointer overflow-hidden md:rounded-lg rounded-t-lg mb-1 md:mb-0">
             <Image
               src={imageUrl}
@@ -137,7 +158,7 @@ const PostCard: React.FC<PostCardProps> = ({
         </Link>
         <div className="flex flex-col justify-between px-3 pb-3 md:px-0 md:pb-0">
           <div className="space-y-2">
-            <Link href={`/phong-tro/${id}`}>
+            <Link href={status === "draft" ? `/post/edit/${id}`: `/phong-tro/${id}`}>
               <h3 className="text-lg font-semibold line-clamp-2 cursor-pointer hover:text-blue-700">
                 {title}
               </h3>
@@ -211,6 +232,26 @@ const PostCard: React.FC<PostCardProps> = ({
                     onClick={handleToggleSave}
                   ></Button>
                 </Tooltip>
+              )}
+              {status && (
+                <Space>
+                  <Popconfirm
+                    title="Bạn có chắc muốn xóa nhà trọ này?"
+                    onConfirm={() => handleDeletePost?.(id)}
+                    onCancel={(e) => e?.stopPropagation()}
+                    okText="Xóa"
+                    cancelText="Hủy"
+                  >
+                    <DeleteOutlined
+                      onClick={(e) => e.stopPropagation()}
+                      style={{ color: "red", fontSize: 16 }}
+                    />
+                  </Popconfirm>
+                  <EditOutlined
+                    onClick={() => handleEditPost?.(id)}
+                    style={{ color: "#1890ff", fontSize: 16 }}
+                  />
+                </Space>
               )}
             </div>
           </div>

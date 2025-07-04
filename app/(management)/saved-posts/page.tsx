@@ -155,18 +155,7 @@ const PostManagementPage = () => {
         ) : (
           myPosts?.data?.posts?.map((post: any) => (
             <Col key={post.id} xs={24} sm={24} lg={24} xxl={12}>
-              <PostCard
-                id={post.id}
-                title={post.title}
-                price={post.price}
-                area={post.area}
-                address={post.address}
-                media={post.media}
-                userId={post.userId}
-                contactPhone={post.contactPhone}
-                createdAt={post.createdAt}
-                utilities={post.utilities}
-              />
+              <PostCard cardValues={post} />
             </Col>
           ))
         )}

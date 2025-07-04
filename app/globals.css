@@ -17,3 +17,11 @@ body {
   color: var(--foreground);
   font-family: Arial, Helvetica, sans-serif;
 }
+
+/* .ant-dropdown-menu {
+  padding: 0 !important;
+}
+
+.ant-dropdown-menu-item {
+  padding: 0 !important;
+} */

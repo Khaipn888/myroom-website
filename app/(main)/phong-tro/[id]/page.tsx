@@ -56,7 +56,6 @@ export default function PostDetailPage() {
       placeholderData: keepPreviousData,
       staleTime: 1000 * 60,
     });
-  console.log(similarPosts?.data);
   if (isLoading) return <FullScreenLoading />;
 
   const handleToggleSave = async () => {

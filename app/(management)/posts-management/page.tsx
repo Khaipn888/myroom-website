@@ -12,6 +12,7 @@ import {
   Spin,
   Table,
   Tag,
+  Pagination,
 } from "antd";
 import { getAllPosts, getAllPostSearchSuggestions } from "@/api/admin";
 import { updateStatusPost } from "@/api/post";
@@ -210,7 +211,7 @@ const PostManagementPage: React.FC = () => {
           case "pending":
             return <Tag color="warning">Chờ duyệt</Tag>;
           case "reject":
-            return <Tag color="error">Không duyệt</Tag>;
+            return <Tag color="error">Bị từ chối</Tag>;
           case "disabled":
             return <Tag color="gray">Vô hiệu hoá</Tag>;
           default:
@@ -239,14 +240,14 @@ const PostManagementPage: React.FC = () => {
                 Duyệt tin
               </Button>
               <Button
-                type="text"
+                type="default"
                 size="small"
                 danger
                 onClick={() => {
                   handleChangeStatusPost(record.id, "reject");
                 }}
               >
-                Không duyệt
+                Từ chối
               </Button>
             </Space>
           );
@@ -280,6 +281,10 @@ const PostManagementPage: React.FC = () => {
     } catch (error) {
       console.log(error);
     }
+  };
+
+  const handleChangePageNumber = (page: number) => {
+    setCurrentPage(page);
   };
 
   return (
@@ -326,7 +331,8 @@ const PostManagementPage: React.FC = () => {
           >
             <Option value="actived">Đã duyệt</Option>
             <Option value="pending">Chờ duyệt</Option>
-            <Option value="reject">Không duyệt</Option>
+            <Option value="reject">Từ chối</Option>
+            <Option value="disabled">Vô hiệu hoá</Option>
           </Select>
         </Col>
 
@@ -385,13 +391,26 @@ const PostManagementPage: React.FC = () => {
           <Spin />
         </div>
       ) : (
-        <Table
-          rowKey={(record) => record.id}
-          columns={columns as ColumnsType<PostType>}
-          dataSource={myPosts?.data?.posts || []}
-          pagination={false}
-          bordered
-        />
+        <div className="">
+          <Table
+            rowKey={(record) => record.id}
+            columns={columns as ColumnsType<PostType>}
+            dataSource={myPosts?.data?.posts || []}
+            pagination={false}
+            bordered
+          />
+          {myPosts?.data?.pagination?.total > 10 && (
+            <div className="flex justify-center mt-5">
+              <Pagination
+                defaultCurrent={1}
+                total={myPosts?.data?.pagination?.total}
+                pageSize={10}
+                onChange={handleChangePageNumber}
+                size="small"
+              />
+            </div>
+          )}
+        </div>
       )}
 
       {/* ---------- Modal xem Report ---------- */}

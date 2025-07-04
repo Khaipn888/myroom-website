@@ -10,6 +10,24 @@ export const createPost = async (data: any) => {
   }
 };
 
+export const updatePost = async (id: any, data: any) => {
+  try {
+    const res = await axiosInstance.post(`/post/${id}`, data);
+    return res.data;
+  } catch (error: any) {
+    throw error.response?.data || error.message || "Đã có lỗi xảy ra";
+  }
+};
+
+export const saveDraft = async (data: any) => {
+  try {
+    const res = await axiosInstance.post("/post/save-draft", data);
+    return res.data;
+  } catch (error: any) {
+    throw error.response?.data || error.message || "Đã có lỗi xảy ra";
+  }
+};
+
 export const getAllPosts = async (data: any) => {
   try {
     const cleanedParams = cleanParams(data);
@@ -47,6 +65,15 @@ export const getDetailPost = async (id: string) => {
   }
 };
 
+export const getMyDetailPost = async (id: string) => {
+  try {
+    const res = await axiosInstance.get(`post/my-post/${id}`);
+    return res.data;
+  } catch (error: any) {
+    throw error.response?.data || error.message || "Đã có lỗi xảy ra";
+  }
+};
+
 export const getSimilarPosts = async (id: string) => {
   try {
     const res = await axiosInstance.get(`post/similar/${id}`);
@@ -58,7 +85,16 @@ export const getSimilarPosts = async (id: string) => {
 
 export const updateStatusPost = async (data: any) => {
   try {
-    const res = await axiosInstance.post("/post/update-status", data);
+    const res = await axiosInstance.post("/post/censor/update-status", data);
+    return res.data;
+  } catch (error: any) {
+    throw error.response?.data || error.message || "Đã có lỗi xảy ra";
+  }
+};
+
+export const deletePost = async (id: string) => {
+  try {
+    const res = await axiosInstance.delete(`/post/${id}`);
     return res.data;
   } catch (error: any) {
     throw error.response?.data || error.message || "Đã có lỗi xảy ra";

@@ -70,7 +70,6 @@ export default function Home() {
     setFilters(newFilters);
     setPage(1);
   };
-  console.log("listAllPosts", listAllPosts);
   const handleShowMap = () => {
     setIsShowMap(!isShowMap);
   };
@@ -221,7 +220,7 @@ export default function Home() {
         <div className="flex-1 lg:col-span-7">
           {renderHeader(false, listAllPosts?.data?.appliedFilters || [])}
           <div className="flex justify-center items-center w-full min-h-48 bg-white rounded-lg mb-5">
-            <Spin spinning={isLoading} tip="Đang tải tin đăng...">
+            <Spin spinning={isLoading}>
               {listAllPosts?.data?.suggested ? (
                 <EmptyState
                   message={`Không có kết quả nào phù hợp`}
@@ -230,7 +229,7 @@ export default function Home() {
                 />
               ) : (
                 listAllPosts?.data?.posts?.map((item: any) => (
-                  <PostCard key={item.id} {...item} />
+                  <PostCard key={item.id} cardValues={item} />
                 ))
               )}
             </Spin>
@@ -244,7 +243,7 @@ export default function Home() {
               )}
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 gap-4">
                 {listAllPosts.data.posts.map((item: any) => (
-                  <PostCard key={item.id} {...item} />
+                  <PostCard key={item.id} cardValues={item} />
                 ))}
               </div>
             </>

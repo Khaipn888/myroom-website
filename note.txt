@@ -1,6 +1,6 @@
 - thêm chức năng lưu nháp
 - thêm chức năng thông báo
-- thêm chức năng sửa xoá bài viết
+- thêm chức năng sửa xoá, đánh dấu là đã cho thuê bài viết
 - thêm chức năng quên mật khẩu
 - thêm chức năng quản lý người dùng
 - check update thông tin trước khi tạo nhà trọ

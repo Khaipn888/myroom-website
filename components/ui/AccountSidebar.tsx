@@ -14,6 +14,7 @@ import {
 } from "@ant-design/icons";
 import Image from "next/image";
 import { useRouter, usePathname } from "next/navigation";
+import { useUserStore } from "@/store/userStore";
 
 const { Sider } = Layout;
 
@@ -56,10 +57,50 @@ const menuItems = [
   },
 ];
 
+const menuItemsAdmin = [
+  {
+    key: "settings",
+    label: "Cài đặt thông tin cá nhân",
+    icon: <SettingOutlined />,
+    path: "/account-setting",
+  },
+  {
+    key: "my-posts",
+    label: "Tin đăng của tôi",
+    icon: <ContainerOutlined />,
+    path: "/my-posts",
+  },
+  {
+    key: "saved-posts",
+    label: "Tin đã lưu",
+    icon: <HeartOutlined />,
+    path: "/saved-posts",
+  },
+  {
+    key: "myrooms",
+    label: "Phòng trọ của tôi",
+    icon: <HomeOutlined />,
+    path: "/my-hostel",
+  },
+  {
+    key: "posts-management",
+    label: "Quản lý tin đăng",
+    icon: <FileProtectOutlined />,
+    path: "/posts-management",
+  },
+  {
+    key: "logout",
+    label: "Đăng xuất",
+    icon: <LogoutOutlined />,
+    path: "/logout",
+  },
+];
+
 export default function AccountSidebar() {
   const [collapsed, setCollapsed] = useState(false);
   const router = useRouter();
   const pathname = usePathname();
+  const { user } = useUserStore();
 
   // Xác định menu đang chọn dựa vào URL hiện tại
   const selectedKey =
@@ -79,7 +120,9 @@ export default function AccountSidebar() {
       {/* Logo */}
       <div
         onClick={() => router.push("/home")}
-        className={`flex items-center ${collapsed ? "px-auto" : "px-7"}`}
+        className={`flex items-center cursor-pointer ${
+          collapsed ? "px-auto" : "px-7"
+        }`}
         style={{
           height: 64,
           justifyContent: collapsed ? "center" : "flex-start",
@@ -118,7 +161,7 @@ export default function AccountSidebar() {
               router.push(target.path);
             }
           }}
-          items={menuItems}
+          items={user?.role === "admin" ? menuItemsAdmin : menuItems}
         />
       </div>
     </Sider>
