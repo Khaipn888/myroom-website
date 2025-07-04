@@ -85,7 +85,7 @@ export const getSimilarPosts = async (id: string) => {
 
 export const updateStatusPost = async (data: any) => {
   try {
-    const res = await axiosInstance.post("/post/update-status", data);
+    const res = await axiosInstance.post("/post/censor/update-status", data);
     return res.data;
   } catch (error: any) {
     throw error.response?.data || error.message || "Đã có lỗi xảy ra";

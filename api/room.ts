@@ -66,11 +66,12 @@ export const updateMember = async (id: string, data: any) => {
 export const deleteMember = async (
   id: string,
   roomId: string,
-  hostelId: string
+  hostelId: string,
+  code?: string
 ) => {
   try {
     const res = await axiosInstance.delete(
-      `/room/member/${id}?roomId=${roomId}&hostelId=${hostelId}`
+      `/room/member/${id}?roomId=${roomId}&hostelId=${hostelId}&code=${code}`
     );
     return res.data;
   } catch (error: any) {

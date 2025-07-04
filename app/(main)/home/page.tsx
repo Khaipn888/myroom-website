@@ -70,7 +70,6 @@ export default function Home() {
     setFilters(newFilters);
     setPage(1);
   };
-  console.log("listAllPosts", listAllPosts);
   const handleShowMap = () => {
     setIsShowMap(!isShowMap);
   };
@@ -244,7 +243,7 @@ export default function Home() {
               )}
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 gap-4">
                 {listAllPosts.data.posts.map((item: any) => (
-                  <PostCard key={item.id} {...item} />
+                  <PostCard key={item.id} cardValues={item} />
                 ))}
               </div>
             </>

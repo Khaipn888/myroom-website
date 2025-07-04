@@ -232,8 +232,7 @@ export default function RoomDetail({
   // Delete member
   const handleDeleteMember = async (member: any) => {
     try {
-      // Giả sử có API deleteMember({ roomId, hostelId, memberCode })
-      await deleteMember(member._id, room._id, hostel._id);
+      await deleteMember(member._id, room._id, hostel._id, member?.code);
       toast.success("Xóa thành viên thành công");
       refetch();
     } catch (error) {

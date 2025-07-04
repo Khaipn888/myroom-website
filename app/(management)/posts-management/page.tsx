@@ -12,6 +12,7 @@ import {
   Spin,
   Table,
   Tag,
+  Pagination,
 } from "antd";
 import { getAllPosts, getAllPostSearchSuggestions } from "@/api/admin";
 import { updateStatusPost } from "@/api/post";
@@ -282,6 +283,10 @@ const PostManagementPage: React.FC = () => {
     }
   };
 
+  const handleChangePageNumber = (page: number) => {
+    setCurrentPage(page);
+  };
+
   return (
     <div style={{ padding: 24, backgroundColor: "white" }}>
       {/* ---------- Filter Bar: Search + Status + Type ---------- */}
@@ -386,13 +391,26 @@ const PostManagementPage: React.FC = () => {
           <Spin />
         </div>
       ) : (
-        <Table
-          rowKey={(record) => record.id}
-          columns={columns as ColumnsType<PostType>}
-          dataSource={myPosts?.data?.posts || []}
-          pagination={false}
-          bordered
-        />
+        <div className="">
+          <Table
+            rowKey={(record) => record.id}
+            columns={columns as ColumnsType<PostType>}
+            dataSource={myPosts?.data?.posts || []}
+            pagination={false}
+            bordered
+          />
+          {myPosts?.data?.pagination?.total > 10 && (
+            <div className="flex justify-center mt-5">
+              <Pagination
+                defaultCurrent={1}
+                total={myPosts?.data?.pagination?.total}
+                pageSize={10}
+                onChange={handleChangePageNumber}
+                size="small"
+              />
+            </div>
+          )}
+        </div>
       )}
 
       {/* ---------- Modal xem Report ---------- */}

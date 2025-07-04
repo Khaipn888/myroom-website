@@ -98,7 +98,6 @@ export default function PostRoomForm() {
         ...values,
         location: isChooseOnMap ? selectLocationOnMap : selectedLocation,
       };
-      console.log("payload", payload);
       await createPost(payload);
       toast.success("Tin đã được tạo thành công");
       router.push("/my-posts");
@@ -125,7 +124,6 @@ export default function PostRoomForm() {
         .catch(() => {
           toast.error("Vui lòng nhập đủ thông tin");
         });
-      console.log("payload", payload);
       await saveDraft(payload);
       toast.success("Tin đã được lưu thành công");
       form.resetFields();

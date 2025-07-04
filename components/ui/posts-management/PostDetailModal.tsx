@@ -19,7 +19,6 @@ interface Props {
 }
 
 const PostDetailModal: React.FC<Props> = ({ visible, post, onClose }) => {
-  console.log("post", post);
   if (!post) return null;
 
   return (

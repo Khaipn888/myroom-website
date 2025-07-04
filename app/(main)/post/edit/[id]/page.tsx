@@ -102,7 +102,6 @@ export default function PostRoomForm() {
 
   useEffect(() => {
     if (myPostDetail) {
-      console.log(myPostDetail?.data);
       const {
         type,
         title,

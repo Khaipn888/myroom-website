@@ -52,7 +52,6 @@ const HostelDetail = ({
   const [editingRoom, setEditingRoom] = useState<Room | null>(null);
   const [selectedRoom, setSelectedRoom] = useState<Room | null>(null);
   const queryClient = useQueryClient();
-  console.log("hostelDetail", hostelDetail);
 
   // Thêm hoặc cập nhật phòng
   const handleSaveRoom = async (

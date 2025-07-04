@@ -13,7 +13,6 @@ export function SocketProvider({ children }: { children: React.ReactNode }) {
   useEffect(() => {
     if (socketRef.current) return;
     const socket = io(process.env.NEXT_PUBLIC_API_BASE_URL_SOCKET, { withCredentials: true });
-    console.log("url", process.env.NEXT_PUBLIC_API_BASE_URL_SOCKET);
     socket.on("connect", () =>
       socket.emit("identify", { userId: user?._id, role: user?.role })
     );

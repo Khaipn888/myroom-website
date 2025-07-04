@@ -15,7 +15,6 @@ export default function PostMediaCarousel({ media }: PostMediaCarouselProps) {
     carouselRef.current?.goTo(index);
     setActiveIndex(index);
   };
-  console.log("media", media);
   return (
     <div className="w-full">
       {/* Carousel chính */}

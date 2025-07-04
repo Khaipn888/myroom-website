@@ -1,10 +1,9 @@
 "use client";
 
 import React from "react";
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
-import { Layout, Menu, Button, Avatar, Dropdown, Badge } from "antd";
+import Notification from "@/components/ui/notifications/Notification";
+import { Layout, Button, Avatar, Dropdown } from "antd";
 import {
-  BellOutlined,
   UserOutlined,
   LoginOutlined,
   LogoutOutlined,
@@ -120,13 +119,7 @@ export default function HeaderComponent({
       {/* Right section */}
       <div className="flex items-center gap-4">
         {/* Thông báo */}
-        <Badge count={5} offset={[0, 0]}>
-          <BellOutlined
-            style={{ fontSize: 22 }}
-            className="cursor-pointer"
-            onClick={() => console.log(user)}
-          />
-        </Badge>
+        {user && <Notification />}
 
         {/* Người dùng hoặc đăng nhập */}
         {user ? (
