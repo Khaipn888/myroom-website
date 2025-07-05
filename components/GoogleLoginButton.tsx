@@ -14,7 +14,7 @@ export default function GoogleLoginButton() {
         const { access_token } = tokenResponse;
 
         await axios.post(
-          "http://localhost:5000/api/auth/google",
+          "https://phongtrocuatoi.onrender.com/api/auth/google",
           { token: access_token },
           { withCredentials: true }
         );
