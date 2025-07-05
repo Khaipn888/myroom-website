@@ -6,8 +6,10 @@ import { useState } from "react";
 import { useQuery, keepPreviousData } from "@tanstack/react-query";
 import { getAllPosts } from "@/api/post";
 import { Spin, Pagination } from "antd";
-import MapInHome from "@/components/ui/maps/MapInHome";
+import dynamic from "next/dynamic";
 import EmptyState from "@/components/ui/EmptyState";
+
+const MapInHome = dynamic(() => import("@/components/ui/maps/MapInHome"), { ssr: false });
 
 const defaultFilters: FilterValues = {
   province: "Toàn quốc",
