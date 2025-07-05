@@ -2,7 +2,7 @@
 
 import React, { useEffect, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
-import { Badge, Dropdown, List, MenuProps, Spin, Tabs, Typography } from "antd";
+import { Badge, Dropdown, List, Tabs } from "antd";
 import { BellOutlined } from "@ant-design/icons";
 import { useSocket } from "@/components/provider/SocketProvider";
 import { getAllNotifications, readNotification } from "@/api/notification";
@@ -14,8 +14,6 @@ import {
 } from "react-icons/fa";
 import "./style.css";
 import { useRouter } from "next/navigation";
-
-const { Text } = Typography;
 
 type NotificationItem = {
   _id: string;
@@ -34,14 +32,12 @@ const TAB_KEYS = {
 export default function Notification() {
   const socket = useSocket();
   const [notifications, setNotifications] = useState<NotificationItem[]>([]);
-  const [loading, setLoading] = useState(false);
   const [visible, setVisible] = useState(false);
   const [activeTab, setActiveTab] = useState<string>(TAB_KEYS.ALL);
 
   const router = useRouter();
   const {
     data: notis,
-    isLoading,
     refetch,
   } = useQuery<any>({
     queryKey: ["getAllNotifications"],
@@ -73,14 +69,7 @@ export default function Notification() {
   }, [notis]);
 
   useEffect(() => {
-    console.log("kiểm tra socket");
-
     if (!socket) return;
-    console.log("Có socket");
-
-    setLoading(true);
-    setLoading(false);
-
     // Lắng nghe notification realtime
     const handleNotification = (notif: NotificationItem) => {
       refetch();

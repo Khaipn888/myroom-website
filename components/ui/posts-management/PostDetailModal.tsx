@@ -1,4 +1,5 @@
 import React from "react";
+import dynamic from "next/dynamic";
 import { Button, Modal } from "antd";
 import PostMediaCarousel from "@/components/ui/PostMediaCarousel";
 import {
@@ -8,9 +9,9 @@ import {
   FaTint,
 } from "react-icons/fa";
 import { GiPriceTag } from "react-icons/gi";
-import PostDetailMap from "@/components/ui/maps/PostDetailmap";
 import { PhoneOutlined } from "@ant-design/icons";
 import Image from "next/image";
+const PostDetailMap = dynamic(() => import("@/components/ui/maps/PostDetailmap"), { ssr: false });
 
 interface Props {
   visible: boolean;
