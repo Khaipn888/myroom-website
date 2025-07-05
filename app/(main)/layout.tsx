@@ -3,6 +3,7 @@
 import HeaderComponent from "@/components/ui/HeaderComponent";
 import useAuth from "@/hooks/useAuth";
 import { useEffect } from "react";
+import Footer from "@/components/ui/Footer";
 
 export default function MainLayout({
   children,
@@ -22,9 +23,10 @@ export default function MainLayout({
       <div className="fixed w-full z-50">
         <HeaderComponent isMainLayout={true} />
       </div>
-      <main className="bg-[#f9f9f9] w-full flex-1 px-2 py-4 xl:px-32 2xl:px-64 pt-20">
+      <main className="bg-[#f9f9f9] w-full flex-1 px-2 py-4 pb-6 xl:px-32 2xl:px-64 pt-20">
         {children}
       </main>
+      <Footer />
     </div>
   );
 }

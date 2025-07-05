@@ -15,96 +15,92 @@ import {
 import Image from "next/image";
 import { useRouter, usePathname } from "next/navigation";
 import { useUserStore } from "@/store/userStore";
+import useAuth from "@/hooks/useAuth";
 
 const { Sider } = Layout;
-
-const menuItems = [
-  {
-    key: "settings",
-    label: "Cài đặt thông tin cá nhân",
-    icon: <SettingOutlined />,
-    path: "/account-setting",
-  },
-  {
-    key: "my-posts",
-    label: "Tin đăng của tôi",
-    icon: <ContainerOutlined />,
-    path: "/my-posts",
-  },
-  {
-    key: "saved-posts",
-    label: "Tin đã lưu",
-    icon: <HeartOutlined />,
-    path: "/saved-posts",
-  },
-  {
-    key: "myrooms",
-    label: "Phòng trọ của tôi",
-    icon: <HomeOutlined />,
-    path: "/my-hostel",
-  },
-  {
-    key: "posts-management",
-    label: "Quản lý tin đăng",
-    icon: <FileProtectOutlined />,
-    path: "/posts-management",
-  },
-  {
-    key: "logout",
-    label: "Đăng xuất",
-    icon: <LogoutOutlined />,
-    path: "/logout",
-  },
-];
-
-const menuItemsAdmin = [
-  {
-    key: "settings",
-    label: "Cài đặt thông tin cá nhân",
-    icon: <SettingOutlined />,
-    path: "/account-setting",
-  },
-  {
-    key: "my-posts",
-    label: "Tin đăng của tôi",
-    icon: <ContainerOutlined />,
-    path: "/my-posts",
-  },
-  {
-    key: "saved-posts",
-    label: "Tin đã lưu",
-    icon: <HeartOutlined />,
-    path: "/saved-posts",
-  },
-  {
-    key: "myrooms",
-    label: "Phòng trọ của tôi",
-    icon: <HomeOutlined />,
-    path: "/my-hostel",
-  },
-  {
-    key: "posts-management",
-    label: "Quản lý tin đăng",
-    icon: <FileProtectOutlined />,
-    path: "/posts-management",
-  },
-  {
-    key: "logout",
-    label: "Đăng xuất",
-    icon: <LogoutOutlined />,
-    path: "/logout",
-  },
-];
 
 export default function AccountSidebar() {
   const [collapsed, setCollapsed] = useState(false);
   const router = useRouter();
   const pathname = usePathname();
   const { user } = useUserStore();
+  const { handleLogout } = useAuth();
 
+  const menuItems = [
+    {
+      key: "settings",
+      label: "Cài đặt thông tin cá nhân",
+      icon: <SettingOutlined />,
+      path: "/account-setting",
+    },
+    {
+      key: "my-posts",
+      label: "Tin đăng của tôi",
+      icon: <ContainerOutlined />,
+      path: "/my-posts",
+    },
+    {
+      key: "saved-posts",
+      label: "Tin đã lưu",
+      icon: <HeartOutlined />,
+      path: "/saved-posts",
+    },
+    {
+      key: "myrooms",
+      label: "Phòng trọ của tôi",
+      icon: <HomeOutlined />,
+      path: "/my-hostel",
+    },
+    {
+      key: "logout",
+      label: "Đăng xuất",
+      icon: <LogoutOutlined />,
+      onClick: handleLogout,
+    },
+  ];
+
+  const menuItemsAdmin = [
+    {
+      key: "settings",
+      label: "Cài đặt thông tin cá nhân",
+      icon: <SettingOutlined />,
+      path: "/account-setting",
+    },
+    {
+      key: "my-posts",
+      label: "Tin đăng của tôi",
+      icon: <ContainerOutlined />,
+      path: "/my-posts",
+    },
+    {
+      key: "saved-posts",
+      label: "Tin đã lưu",
+      icon: <HeartOutlined />,
+      path: "/saved-posts",
+    },
+    {
+      key: "myrooms",
+      label: "Phòng trọ của tôi",
+      icon: <HomeOutlined />,
+      path: "/my-hostel",
+    },
+    {
+      key: "posts-management",
+      label: "Quản lý tin đăng",
+      icon: <FileProtectOutlined />,
+      path: "/posts-management",
+    },
+    {
+      key: "logout",
+      label: "Đăng xuất",
+      icon: <LogoutOutlined />,
+      onClick: handleLogout,
+    },
+  ];
   // Xác định menu đang chọn dựa vào URL hiện tại
   const selectedKey =
-    menuItems.find((item) => pathname.startsWith(item.path))?.key || "settings";
+    menuItems.find((item) => pathname.startsWith(item?.path || ""))?.key ||
+    "settings";
 
   return (
     <Sider
@@ -158,7 +154,7 @@ export default function AccountSidebar() {
           onClick={(e) => {
             const target = menuItems.find((item) => item.key === e.key);
             if (target) {
-              router.push(target.path);
+              if (target.path) router.push(target.path);
             }
           }}
           items={user?.role === "admin" ? menuItemsAdmin : menuItems}
