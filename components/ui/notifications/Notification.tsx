@@ -53,12 +53,16 @@ export default function Notification() {
     switch (item.type) {
       case "CP":
         router.push("/posts-management");
+        break;
       case "AC":
         router.push("/my-posts");
+        break;
       case "RJ":
         router.push("/my-posts");
+        break;
       case "AM":
         router.push("/my-hostel");
+        break;
       default:
         break;
     }
