@@ -14,12 +14,12 @@ import {
   Radio,
 } from "antd";
 import Uploader from "@/components/ui/Uploader";
-import dynamic from "next/dynamic";
 import { useCallback } from "react";
 import { debounce } from "lodash";
 import { createPost, saveDraft } from "@/api/post";
 import { toast } from "react-toastify";
 import { useRouter } from "next/navigation";
+import dynamic from "next/dynamic";
 // Tải MapPicker động để tránh lỗi SSR
 const MapPicker = dynamic(() => import("@/components/ui/maps/MapPicker"), {
   ssr: false,

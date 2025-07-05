@@ -54,7 +54,7 @@ const PostManagementPage: React.FC = () => {
   const [typeFilter, setTypeFilter] = useState<string[]>([]);
   const [sort, setSort] = useState<string>("createdAt:desc");
   const [currentPage, setCurrentPage] = useState<number>(1);
-  const pageSize = 15;
+  const pageSize = 10;
 
   // State cho modal Report và Detail
   const [reportModalVisible, setReportModalVisible] = useState<boolean>(false);
