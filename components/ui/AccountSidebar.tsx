@@ -15,7 +15,9 @@ import {
 import Image from "next/image";
 import { useRouter, usePathname } from "next/navigation";
 import { useUserStore } from "@/store/userStore";
+import useAuth from "@/hooks/useAuth";
 
+const { handleLogout } = useAuth();
 const { Sider } = Layout;
 
 const menuItems = [
@@ -44,16 +46,11 @@ const menuItems = [
     path: "/my-hostel",
   },
   {
-    key: "posts-management",
-    label: "Quản lý tin đăng",
-    icon: <FileProtectOutlined />,
-    path: "/posts-management",
-  },
-  {
     key: "logout",
     label: "Đăng xuất",
     icon: <LogoutOutlined />,
     path: "/logout",
+    onClick: handleLogout,
   },
 ];
 
