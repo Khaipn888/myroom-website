@@ -1,5 +1,5 @@
 import type { Config } from "tailwindcss";
-import scrollbar from "tailwind-scrollbar";
+import lineClamp from "@tailwindcss/line-clamp"
 
 const config: Config = {
   content: [
@@ -10,6 +10,6 @@ const config: Config = {
   theme: {
     extend: {},
   },
-  plugins: [scrollbar],
+  plugins: [lineClamp],
 };
 export default config;
