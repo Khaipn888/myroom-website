@@ -11,6 +11,7 @@ import {
   MenuFoldOutlined,
   MenuUnfoldOutlined,
   FileProtectOutlined,
+  UserOutlined,
 } from "@ant-design/icons";
 import Image from "next/image";
 import { useRouter, usePathname } from "next/navigation";
@@ -46,7 +47,7 @@ export default function AccountSidebar() {
       path: "/saved-posts",
     },
     {
-      key: "myrooms",
+      key: "my-hostel",
       label: "Phòng trọ của tôi",
       icon: <HomeOutlined />,
       path: "/my-hostel",
@@ -55,6 +56,7 @@ export default function AccountSidebar() {
       key: "logout",
       label: "Đăng xuất",
       icon: <LogoutOutlined />,
+      path: "/",
       onClick: handleLogout,
     },
   ];
@@ -79,7 +81,7 @@ export default function AccountSidebar() {
       path: "/saved-posts",
     },
     {
-      key: "myrooms",
+      key: "my-hostel",
       label: "Phòng trọ của tôi",
       icon: <HomeOutlined />,
       path: "/my-hostel",
@@ -91,16 +93,23 @@ export default function AccountSidebar() {
       path: "/posts-management",
     },
     {
+      key: "users-management",
+      label: "Quản lý người dùng",
+      icon: <UserOutlined />,
+      path: "/users-management",
+    },
+    {
       key: "logout",
       label: "Đăng xuất",
       icon: <LogoutOutlined />,
+      path: "/",
       onClick: handleLogout,
     },
   ];
   // Xác định menu đang chọn dựa vào URL hiện tại
+  const items = user?.role === "admin" ? menuItemsAdmin : menuItems;
   const selectedKey =
-    menuItems.find((item) => pathname.startsWith(item?.path || ""))?.key ||
-    "settings";
+    items.find((item) => pathname.startsWith(item.path))?.key || "settings";
 
   return (
     <Sider
@@ -152,9 +161,12 @@ export default function AccountSidebar() {
           inlineCollapsed={collapsed}
           style={{ borderRight: 0 }}
           onClick={(e) => {
-            const target = menuItems.find((item) => item.key === e.key);
+            const items = user?.role === "admin" ? menuItemsAdmin : menuItems;
+            const target = items.find((item) => item.key === e.key);
             if (target) {
-              if (target.path) router.push(target.path);
+              if (target.path) {
+                router.push(target.path);
+              }
             }
           }}
           items={user?.role === "admin" ? menuItemsAdmin : menuItems}

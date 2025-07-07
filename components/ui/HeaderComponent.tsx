@@ -81,14 +81,19 @@ export default function HeaderComponent({
       label: <Link href="/my-hostel">Phòng trọ của tôi</Link>,
     },
     {
+      key: "setting",
+      icon: <SettingOutlined />,
+      label: <Link href="/account-setting">Cài đặt thông tin cá nhân</Link>,
+    },
+    {
       key: "posts-management",
       icon: <FileProtectOutlined />,
       label: <Link href="/posts-management">Quản lý tin đăng</Link>,
     },
     {
-      key: "setting",
-      icon: <SettingOutlined />,
-      label: <Link href="/account-setting">Cài đặt thông tin cá nhân</Link>,
+      key: "users-management",
+      icon: <UserOutlined />,
+      label: <Link href="/users-management">Quản lý người dùng</Link>,
     },
     {
       key: "logout",

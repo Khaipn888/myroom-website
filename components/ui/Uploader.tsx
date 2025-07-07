@@ -53,7 +53,7 @@ const Uploader: React.FC<UploaderProps> = ({ maxCount = 8, value = [], onChange 
       type: /\.(mp4|webm|ogg)$/i.test(url) ? "video" : "image",
     }));
     setMediaList(initial);
-  }, [value]);
+  }, []);
   const handleFiles = async (event: React.ChangeEvent<HTMLInputElement>) => {
     setUploading(true);
     const files = Array.from(event.target.files || []);
