@@ -23,7 +23,6 @@ import {
   lockUser,
   unlockUser,
 } from "@/api/admin";
-import { updateStatusPost } from "@/api/post";
 import { useQuery, keepPreviousData } from "@tanstack/react-query";
 import debounce from "lodash/debounce";
 import { SearchOutlined } from "@ant-design/icons";
@@ -261,6 +260,7 @@ const UsersManagementPage: React.FC = () => {
       refetch();
       toast.success("Tài khoản đã được mở khoá");
     } catch (error) {
+      console.log(error);
       toast.error("Mở khoá thất bại vui lòng thử lại sau");
     }
   };
@@ -410,6 +410,7 @@ const UsersManagementPage: React.FC = () => {
             refetch();
             toast.success("Khoá tài khoản thành công");
           } catch (error) {
+            console.log(error);
             toast.error("Khoá tài khoản thất bại!");
           }
           setLockLoading(false);
