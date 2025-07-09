@@ -18,7 +18,7 @@ import { keepPreviousData, useQuery } from "@tanstack/react-query";
 import { getDetailPost, getSimilarPosts } from "@/api/post";
 import FullScreenLoading from "@/components/ui/FullScreenLoading";
 import Image from "next/image";
-import { Button, message, Spin } from "antd";
+import { Button, Spin } from "antd";
 import PostDetailMap from "@/components/ui/maps/PostDetailmap";
 import { GiPriceTag } from "react-icons/gi";
 import { savePost, unsavePost } from "@/api/user";
@@ -30,6 +30,7 @@ import { convertPrice } from "@/utils/convertPrice";
 import ReportPostModal from "@/components/ui/ReportPostModal";
 import PostCommentBox from "@/components/ui/PostCommentBox";
 import { getAllComments } from "@/api/comment";
+import { toast } from "react-toastify";
 
 export default function PostDetailPage() {
   const params = useParams();
@@ -52,10 +53,7 @@ export default function PostDetailPage() {
     staleTime: 1000 * 60,
   });
 
-  const {
-    data: allComments,
-    refetch: refetchGetAllComment,
-  } = useQuery<any>({
+  const { data: allComments, refetch: refetchGetAllComment } = useQuery<any>({
     queryKey: ["getAllComment", id],
     queryFn: () => getAllComments(id as string),
     placeholderData: keepPreviousData,
@@ -94,6 +92,14 @@ export default function PostDetailPage() {
       savedPosts: newList,
     });
     refetch();
+  };
+
+  const handleReport = () => {
+    if (!user) {
+      setIsModalVisible(true);
+      return;
+    }
+    setIsReportModalVisible(true);
   };
 
   const changePostDetail = (id: any) => {
@@ -195,7 +201,7 @@ export default function PostDetailPage() {
             </button>
             <button
               onClick={() => {
-                message.success("Đã sao chép link");
+                toast.success("Đã sao chép link");
                 navigator.clipboard.writeText(window.location.href);
               }}
               className="flex items-center gap-1 text-gray-600 hover:text-blue-500 cursor-pointer"
@@ -203,7 +209,7 @@ export default function PostDetailPage() {
               <ShareAltOutlined /> Sao chép link
             </button>
             <button
-              onClick={() => setIsReportModalVisible(true)}
+              onClick={handleReport}
               className="flex items-center gap-1 text-gray-600 hover:text-yellow-500 cursor-pointer"
             >
               <FlagOutlined /> Báo xấu
