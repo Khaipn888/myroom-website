@@ -1,8 +1,14 @@
 "use client";
 
 import React from "react";
-import { Card, Space, Popconfirm } from "antd";
-import { EditOutlined, DeleteOutlined } from "@ant-design/icons";
+import { Card, Space, Popconfirm, Button } from "antd";
+import {
+  EditOutlined,
+  DeleteOutlined,
+  LogoutOutlined,
+} from "@ant-design/icons";
+import dayjs from "dayjs";
+import { useUserStore } from "@/store/userStore";
 
 export interface Bill {
   _id: string;
@@ -34,7 +40,9 @@ export interface Room {
   name: string;
   area: number;
   price: number;
-  members?: Member[];
+  hostelId: string;
+  rentDate?: Date;
+  members?: any;
   electricityPrice?: number;
   waterPrice?: number;
   services?: Service[];
@@ -44,26 +52,36 @@ export interface Room {
 interface RoomCardProps {
   room: Room;
   isOwner: boolean;
+  hostelId: string;
   onEdit: (room: Room) => void;
   onDelete: (id: string) => void;
   onSelect: (room: Room) => void;
+  onLeave: (data: any) => void;
 }
 
 const RoomCard: React.FC<RoomCardProps> = ({
   room,
   isOwner,
+  hostelId,
   onEdit,
   onDelete,
   onSelect,
+  onLeave,
 }) => {
+  const user = useUserStore((state) => state.user);
+  const code = user?.code;
+  const memberId =
+    room?.members?.filter((mem: any) => mem.code == user?.code)?.[0]?._id || "";
   return (
     <Card
       className={`${
-        room.canView ? "cursor-pointer" : "pointer-events-none !cursor-not-allowed"
+        room.canView
+          ? "cursor-pointer !bg-blue-100 !border-blue-900"
+          : "pointer-events-none !cursor-not-allowed"
       } !border-gray-300 rounded-lg hover:shadow-md transition-shadow duration-150`}
-      title={!isOwner && room.canView ? `${room.name}(của bạn)`: room.name}
+      title={!isOwner && room.canView ? `${room.name} (của bạn)` : room.name}
       extra={
-        isOwner && (
+        isOwner ? (
           <Space>
             <Popconfirm
               title="Bạn có chắc muốn xóa phòng này?"
@@ -88,6 +106,37 @@ const RoomCard: React.FC<RoomCardProps> = ({
               style={{ color: "#1890ff", fontSize: 16 }}
             />
           </Space>
+        ) : (
+          room.canView && (
+            <Space>
+              <Popconfirm
+                title="Bạn có chắc muốn rời khỏi phòng này?"
+                onConfirm={(e) => {
+                  e?.stopPropagation();
+                  onLeave({
+                    roomId: room._id,
+                    hostelId,
+                    memberId,
+                    code,
+                  });
+                }}
+                onCancel={(e) => e?.stopPropagation()}
+                okText="Có"
+                cancelText="Không"
+              >
+                <Button
+                  onClick={(e) => e.stopPropagation()}
+                  icon={
+                    <LogoutOutlined style={{ color: "red", fontSize: 12 }} />
+                  }
+                  danger
+                  size="small"
+                >
+                  Rời phòng
+                </Button>
+              </Popconfirm>
+            </Space>
+          )
         )
       }
       onClick={() => onSelect(room)}
@@ -108,6 +157,12 @@ const RoomCard: React.FC<RoomCardProps> = ({
         <div className="flex justify-between">
           <span className="font-medium">Số người:</span>
           <span>{room.members?.length ?? 0}</span>
+        </div>
+        <div className="flex justify-between">
+          <span className="font-medium">Ngày thuê:</span>
+          <span>
+            {dayjs(room?.rentDate || Date.now()).format("DD/MM/YYYY")}
+          </span>
         </div>
       </div>
     </Card>

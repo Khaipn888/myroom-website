@@ -13,17 +13,22 @@ import dayjs from "dayjs";
 import relativeTime from "dayjs/plugin/relativeTime";
 import "dayjs/locale/vi";
 import {
+  CheckCircleOutlined,
+  CloseCircleOutlined,
   DeleteOutlined,
   EditOutlined,
   HeartFilled,
   HeartOutlined,
 } from "@ant-design/icons";
 import Link from "next/link";
-import { Button, Popconfirm, Space, Tooltip } from "antd";
+import { Button, Modal, Popconfirm, Space, Tooltip } from "antd";
 import { checkIsSavedPost } from "@/utils/checkIsSavedPost";
 import { useUserStore } from "@/store/userStore";
 import { savePost, unsavePost } from "@/api/user";
 import ModalLoginRequire from "@/components/ui/ModalLoginRequire";
+import { markPostRented } from "@/api/post";
+import { toast } from "react-toastify";
+import { useQueryClient } from "@tanstack/react-query";
 
 dayjs.extend(relativeTime);
 dayjs.locale("vi");
@@ -38,7 +43,8 @@ interface PostCardValues {
   contactPhone: string;
   createdAt: string;
   utilities?: string[];
-  status?: "pending" | "actived" | "reject" | "draft" | "disabled";
+  status?: "pending" | "actived" | "reject" | "draft" | "disabled" | "rented";
+  reason?: string;
 }
 
 interface PostCardProps {
@@ -70,6 +76,12 @@ const PostCard: React.FC<PostCardProps> = ({
   const user = useUserStore((state) => state.user);
   const setUser = useUserStore((state) => state.setUser);
   const isSaved = checkIsSavedPost(id);
+  const [reasonModal, setReasonModal] = useState({
+    visible: false,
+    reason: "",
+    type: "", // "reject" | "disabled"
+  });
+  const queryClient = useQueryClient();
 
   const handleToggleSave = async () => {
     if (!user) {
@@ -99,6 +111,27 @@ const PostCard: React.FC<PostCardProps> = ({
     setIsModalVisible(false);
   };
 
+  const handleRentedPost = async (data: any) => {
+    let messageSuccess;
+    let messageError;
+    try {
+      if (data.newStatus === "rented") {
+        messageSuccess = "Tin đăng đã được đánh dấu là đã cho thuê";
+        messageError = "Đánh dấu đã cho thuê thất bại, vui lòng thử lại sau";
+      }
+      if (data.newStatus === "actived") {
+        messageSuccess = "Bỏ đánh dấu tin đăng thành công";
+        messageError = "Bỏ đánh dấu tin đăng thất bại, vui lòng thử lại sau";
+      }
+      await markPostRented(data);
+      toast.success(messageSuccess);
+      queryClient.invalidateQueries({ queryKey: ["getAllMyPosts"] });
+    } catch (error) {
+      console.log(error);
+      toast.error(messageError);
+    }
+  };
+
   const renderStatusBadge = (statusValue: string) => {
     switch (statusValue) {
       case "pending":
@@ -115,13 +148,33 @@ const PostCard: React.FC<PostCardProps> = ({
         );
       case "reject":
         return (
-          <span className="px-2 py-0.5 bg-red-100 text-red-800 text-xs font-semibold rounded-full">
+          <span
+            className="px-2 py-0.5 bg-red-100 text-red-800 text-xs font-semibold rounded-full cursor-pointer"
+            onClick={() =>
+              setReasonModal({
+                visible: true,
+                reason: cardValues.reason || "Không có lý do.",
+                type: "reject",
+              })
+            }
+            title="Xem lý do bị từ chối"
+          >
             Bị từ chối
           </span>
         );
       case "disabled":
         return (
-          <span className="px-2 py-0.5 bg-gray-100 text-gray-800 text-xs font-semibold rounded-full">
+          <span
+            className="px-2 py-0.5 bg-gray-100 text-gray-800 text-xs font-semibold rounded-full cursor-pointer"
+            onClick={() =>
+              setReasonModal({
+                visible: true,
+                reason: cardValues.reason || "Không có lý do.",
+                type: "reject",
+              })
+            }
+            title="Xem lý do bị từ chối"
+          >
             Vô hiệu hoá
           </span>
         );
@@ -129,6 +182,12 @@ const PostCard: React.FC<PostCardProps> = ({
         return (
           <span className="px-2 py-0.5 bg-gray-200 text-gray-900 text-xs font-semibold rounded-full">
             Nháp
+          </span>
+        );
+      case "rented":
+        return (
+          <span className="px-2 py-0.5 bg-blue-200 text-blue-900 text-xs font-semibold rounded-full">
+            Đã cho thuê
           </span>
         );
       default:
@@ -139,7 +198,9 @@ const PostCard: React.FC<PostCardProps> = ({
   return (
     <div className="rounded-lg overflow-hidden shadow hover:shadow-lg transition bg-white max-w-[800px] md:p-4 mb-2">
       <div className="md:grid md:grid-cols-2 md:gap-3">
-        <Link href={status === "draft" ? `/post/edit/${id}`: `/phong-tro/${id}`}>
+        <Link
+          href={status === "draft" ? `/post/edit/${id}` : `/phong-tro/${id}`}
+        >
           <div className="relative min-h-48 h-48 w-full cursor-pointer overflow-hidden md:rounded-lg rounded-t-lg mb-1 md:mb-0">
             <Image
               src={imageUrl}
@@ -158,7 +219,11 @@ const PostCard: React.FC<PostCardProps> = ({
         </Link>
         <div className="flex flex-col justify-between px-3 pb-3 md:px-0 md:pb-0">
           <div className="space-y-2">
-            <Link href={status === "draft" ? `/post/edit/${id}`: `/phong-tro/${id}`}>
+            <Link
+              href={
+                status === "draft" ? `/post/edit/${id}` : `/phong-tro/${id}`
+              }
+            >
               <h3 className="text-lg font-semibold line-clamp-2 cursor-pointer hover:text-blue-700">
                 {title}
               </h3>
@@ -204,7 +269,7 @@ const PostCard: React.FC<PostCardProps> = ({
                 alt={userId?.name}
                 width={28}
                 height={28}
-                className="rounded-full object-cover"
+                className="rounded-full aspect-square object-cover"
               />
               <div className="flex-1 min-w-0">
                 <p className="text-xs font-bold truncate">{userId?.name}</p>
@@ -235,6 +300,42 @@ const PostCard: React.FC<PostCardProps> = ({
               )}
               {status && (
                 <Space>
+                  {status === "actived" && (
+                    <Popconfirm
+                      title="Bạn có chắc muốn đánh dấu là đã cho thuê?"
+                      onConfirm={() =>
+                        handleRentedPost?.({ postId: id, newStatus: "rented" })
+                      }
+                      onCancel={(e) => e?.stopPropagation()}
+                      okText="Có"
+                      cancelText="Không"
+                    >
+                      <CheckCircleOutlined
+                        onClick={(e) => e.stopPropagation()}
+                        style={{ color: "green", fontSize: 16 }}
+                      />
+                    </Popconfirm>
+                  )}
+                  {status === "rented" && (
+                    <Popconfirm
+                      title="Bạn có chắc muốn bỏ đánh dấu đã cho thuê?"
+                      onConfirm={() =>
+                        handleRentedPost?.({ postId: id, newStatus: "actived" })
+                      }
+                      onCancel={(e) => e?.stopPropagation()}
+                      okText="Có"
+                      cancelText="Không"
+                    >
+                      <CloseCircleOutlined
+                        onClick={(e) => e.stopPropagation()}
+                        style={{ color: "red", fontSize: 16 }}
+                      />
+                    </Popconfirm>
+                  )}
+                  <EditOutlined
+                    onClick={() => handleEditPost?.(id)}
+                    style={{ color: "#1890ff", fontSize: 16 }}
+                  />
                   <Popconfirm
                     title="Bạn có chắc muốn xóa nhà trọ này?"
                     onConfirm={() => handleDeletePost?.(id)}
@@ -247,10 +348,6 @@ const PostCard: React.FC<PostCardProps> = ({
                       style={{ color: "red", fontSize: 16 }}
                     />
                   </Popconfirm>
-                  <EditOutlined
-                    onClick={() => handleEditPost?.(id)}
-                    style={{ color: "#1890ff", fontSize: 16 }}
-                  />
                 </Space>
               )}
             </div>
@@ -258,6 +355,20 @@ const PostCard: React.FC<PostCardProps> = ({
         </div>
       </div>
       <ModalLoginRequire visible={isModalVisible} onCancel={handleCancel} />
+      <Modal
+        open={reasonModal.visible}
+        onCancel={() => setReasonModal({ ...reasonModal, visible: false })}
+        footer={null}
+        title={
+          reasonModal.type === "reject"
+            ? "Lý do bị từ chối"
+            : "Lý do bị vô hiệu hoá"
+        }
+      >
+        <div className="whitespace-pre-line text-base text-gray-700 min-h-[40px]">
+          {reasonModal.reason}
+        </div>
+      </Modal>
     </div>
   );
 };

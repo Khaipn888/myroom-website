@@ -36,10 +36,7 @@ export default function Notification() {
   const [activeTab, setActiveTab] = useState<string>(TAB_KEYS.ALL);
 
   const router = useRouter();
-  const {
-    data: notis,
-    refetch,
-  } = useQuery<any>({
+  const { data: notis, refetch } = useQuery<any>({
     queryKey: ["getAllNotifications"],
     queryFn: () => getAllNotifications({}),
     staleTime: 1000 * 60,
@@ -61,6 +58,9 @@ export default function Notification() {
         router.push("/my-posts");
         break;
       case "AM":
+        router.push("/my-hostel");
+        break;
+      case "UL":
         router.push("/my-hostel");
         break;
       default:
@@ -99,8 +99,12 @@ export default function Notification() {
         return <FaExclamationCircle className="text-red-500 w-5 h-5" />;
       case "DM":
         return <FaExclamationCircle className="text-red-500 w-5 h-5" />;
+      case "IF":
+        return <FaExclamationCircle className="text-blue-500 w-5 h-5" />;
       case "AM":
         return <FaRegCheckCircle className="text-green-500 w-5 h-5" />;
+      case "UL":
+        return <FaExclamationCircle className="text-red-500 w-5 h-5" />;
       default:
         return <BellOutlined className="text-gray-500 w-5 h-5" />;
     }

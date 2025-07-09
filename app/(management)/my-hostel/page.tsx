@@ -10,6 +10,7 @@ import {
   Space,
   Select,
   Spin,
+  DatePicker,
 } from "antd";
 import {
   PlusCircleOutlined,
@@ -29,6 +30,7 @@ import { toast } from "react-toastify";
 import { useQuery, keepPreviousData } from "@tanstack/react-query";
 import { checkIsOwner } from "@/utils/checkIsOwner";
 import InvoiceExportButton from "@/components/ui/InvoiceExportButton";
+import dayjs from "dayjs";
 
 interface Service {
   name: string;
@@ -46,6 +48,7 @@ interface Hostel {
   electricityPrice: number;
   waterPrice: number;
   services: Service[];
+  deadline: Date;
 }
 
 export default function MyHostels() {
@@ -114,6 +117,7 @@ export default function MyHostels() {
         floorCount: values.floorCount,
         totalRoom: values.totalRoom,
         services: svcList,
+        deadline: values.deadline,
       };
 
       await createHostel(payload);
@@ -127,8 +131,9 @@ export default function MyHostels() {
     }
   };
   const openEditModal = (h: Hostel) => {
+    const deadline = dayjs(h?.deadline).format("DD/MM/YYYY");
     setEditingHostel(h);
-    editForm.setFieldsValue(h);
+    editForm.setFieldsValue({ ...h, deadline });
     setIsEditModalOpen(true);
   };
 
@@ -412,6 +417,24 @@ export default function MyHostels() {
               )}
             </Form.List>
           </div>
+          <Form.Item
+            name="deadline"
+            label="Hạn nộp tiền trọ"
+            rules={[
+              {
+                required: true,
+                message: "Vui lòng chọn hạn nộp tiền trọ",
+              },
+            ]}
+          >
+            <DatePicker
+              style={{ width: "100%" }}
+              suffixIcon="hàng tháng"
+              prefix="Ngày"
+              format="DD"
+              placeholder="nộp tiền trọ"
+            />
+          </Form.Item>
         </Form>
       </Modal>
 
@@ -503,6 +526,23 @@ export default function MyHostels() {
               </>
             )}
           </Form.List>
+          <Form.Item
+            name="deadline"
+            label="Hạn nộp tiền trọ"
+            rules={[
+              {
+                required: true,
+                message: "Vui lòng chọn hạn nộp tiền trọ",
+              },
+            ]}
+          >
+            <DatePicker
+              style={{ width: "100%" }}
+              suffixIcon="hàng tháng"
+              prefix="Ngày"
+              format="DD"
+            />
+          </Form.Item>
         </Form>
       </Modal>
     </div>

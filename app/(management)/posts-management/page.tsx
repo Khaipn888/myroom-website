@@ -13,6 +13,9 @@ import {
   Table,
   Tag,
   Pagination,
+  Modal,
+  Form,
+  Input,
 } from "antd";
 import { getAllPosts, getAllPostSearchSuggestions } from "@/api/admin";
 import { updateStatusPost } from "@/api/post";
@@ -22,6 +25,7 @@ import ReportModal from "@/components/ui/posts-management/PostReportModal";
 import PostDetailModal from "@/components/ui/posts-management/PostDetailModal";
 import { SearchOutlined } from "@ant-design/icons";
 import { ColumnsType } from "antd/es/table";
+import { toast } from "react-toastify";
 
 const { Option } = Select;
 const { Text } = Typography;
@@ -62,6 +66,15 @@ const PostManagementPage: React.FC = () => {
   const [detailModalVisible, setDetailModalVisible] = useState<boolean>(false);
   const [selectedPost, setSelectedPost] = useState<PostType | null>(null);
 
+  const [reasonModalVisible, setReasonModalVisible] = useState(false);
+  const [reason, setReason] = useState("");
+  const [reasonAction, setReasonAction] = useState<
+    "reject" | "disabled" | null
+  >(null);
+  const [reasonTargetPostId, setReasonTargetPostId] = useState<string | null>(
+    null
+  );
+  const [reasonLoading, setReasonLoading] = useState(false);
   // --- Lấy danh sách bài đăng của user với React Query ---
   const {
     data: myPosts,
@@ -236,7 +249,9 @@ const PostManagementPage: React.FC = () => {
                 size="small"
                 danger
                 onClick={() => {
-                  handleChangeStatusPost(record.id, "reject");
+                  setReasonAction("reject");
+                  setReasonTargetPostId(record.id);
+                  setReasonModalVisible(true);
                 }}
               >
                 Từ chối
@@ -252,7 +267,9 @@ const PostManagementPage: React.FC = () => {
               size="small"
               danger
               onClick={() => {
-                handleChangeStatusPost(record.id, "disabled");
+                setReasonAction("disabled");
+                setReasonTargetPostId(record.id);
+                setReasonModalVisible(true);
               }}
             >
               Vô hiệu hoá
@@ -425,6 +442,64 @@ const PostManagementPage: React.FC = () => {
           setSelectedPost(null);
         }}
       />
+      <Modal
+        title={
+          reasonAction === "reject"
+            ? "Lý do từ chối bài đăng"
+            : "Lý do vô hiệu hoá bài đăng"
+        }
+        open={reasonModalVisible}
+        onCancel={() => {
+          setReasonModalVisible(false);
+          setReason("");
+          setReasonAction(null);
+          setReasonTargetPostId(null);
+        }}
+        onOk={async () => {
+          if (!reason.trim()) {
+            toast.error("Vui lòng nhập lý do!");
+            return;
+          }
+          setReasonLoading(true);
+          try {
+            await updateStatusPost({
+              postId: reasonTargetPostId,
+              newStatus: reasonAction,
+              reason,
+            });
+            setReasonModalVisible(false);
+            setReason("");
+            setReasonAction(null);
+            setReasonTargetPostId(null);
+            refetch();
+            toast.success("Cập nhật trạng thái bài đăng thành công");
+          } catch (error) {
+            toast.error("Cập nhật trạng thái thất bại!");
+            console.log(error);
+          }
+          setReasonLoading(false);
+        }}
+        confirmLoading={reasonLoading}
+        okText="Xác nhận"
+        cancelText="Huỷ"
+      >
+        <Form layout="vertical">
+          <Form.Item label="Lý do" required>
+            <Input.TextArea
+              rows={4}
+              placeholder={
+                reasonAction === "reject"
+                  ? "Nhập lý do từ chối bài đăng..."
+                  : "Nhập lý do vô hiệu hoá bài đăng..."
+              }
+              value={reason}
+              onChange={(e) => setReason(e.target.value)}
+              maxLength={200}
+              showCount
+            />
+          </Form.Item>
+        </Form>
+      </Modal>
     </div>
   );
 };

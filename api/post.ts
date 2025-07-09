@@ -92,6 +92,15 @@ export const updateStatusPost = async (data: any) => {
   }
 };
 
+export const markPostRented = async (data: any) => {
+  try {
+    const res = await axiosInstance.post("/post/mark/rented", data);
+    return res.data;
+  } catch (error: any) {
+    throw error.response?.data || error.message || "Đã có lỗi xảy ra";
+  }
+};
+
 export const deletePost = async (id: string) => {
   try {
     const res = await axiosInstance.delete(`/post/${id}`);
