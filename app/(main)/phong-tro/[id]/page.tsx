@@ -259,7 +259,7 @@ export default function PostDetailPage() {
             />
             <div>
               <p className="font-semibold">{postDetail?.data?.user.name}</p>
-              <p className="text-xs text-gray-500">{`${user?.numberOfPost} tin đăng`}</p>
+              <p className="text-xs text-gray-500">{`${postDetail?.data?.user.numberOfPost} tin đăng`}</p>
             </div>
           </div>
           <div className="flex text-sm gap-2 items-center">
