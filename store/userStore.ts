@@ -11,7 +11,9 @@ interface UserState {
     code?: string;
     phone?: string;
     address?: string;
-    savedPosts?: string[]
+    savedPosts?: string[];
+    numberOfPost?: number;
+    numberOfPostRented?: number;
   } | null;
   setUser: (user: any) => void;
   logout: () => void;

@@ -7,9 +7,12 @@ import RoomFormModal from "./RoomFormModal";
 import RoomDetail from "./RoomDetail";
 import RoomCard from "./RoomCard";
 import { createRoom, updateRoom, deleteRoom } from "@/api/room";
+import { leaveRoom, sendNoti } from "@/api/user";
 import { toast } from "react-toastify";
 import { useQueryClient } from "@tanstack/react-query";
 import { checkIsOwner } from "@/utils/checkIsOwner";
+import NotificationModal from "@/components/ui/hostels/NotiModal";
+import dayjs from "dayjs";
 
 interface Service {
   name: string;
@@ -37,6 +40,7 @@ interface Room {
   waterPrice?: number;
   services?: Service[];
   canView: boolean;
+  rentDate?: Date;
 }
 
 const HostelDetail = ({
@@ -51,6 +55,7 @@ const HostelDetail = ({
   const [modalOpen, setModalOpen] = useState(false);
   const [editingRoom, setEditingRoom] = useState<Room | null>(null);
   const [selectedRoom, setSelectedRoom] = useState<Room | null>(null);
+  const [notiModalOpen, setNotiModalOpen] = useState(false);
   const queryClient = useQueryClient();
 
   // Thêm hoặc cập nhật phòng
@@ -94,6 +99,19 @@ const HostelDetail = ({
     }
   };
 
+  const handleLeaveRoom = async (data: any) => {
+    try {
+      await leaveRoom(data);
+      queryClient.invalidateQueries({ queryKey: ["getHostelDetail"] });
+      queryClient.invalidateQueries({ queryKey: ["getMyHostels"] });
+      toast.success("Bạn đã rời khỏi phòng thành công");
+      onBack();
+    } catch (error) {
+      console.log(error);
+      toast.error("Không thể rời khỏi phòng");
+    }
+  };
+
   const openAddRoom = () => {
     setEditingRoom(null);
     setModalOpen(true);
@@ -101,6 +119,18 @@ const HostelDetail = ({
   const openEditRoom = (room: Room) => {
     setEditingRoom(room);
     setModalOpen(true);
+  };
+
+  const handleSendNoti = async (data: any) => {
+    try {
+      const payload = { ...data, hostelId: hostel._id }
+      await sendNoti(payload);
+      toast.success("Gửi thông báo thành công");
+      setNotiModalOpen(false);
+    } catch (error) {
+      console.log(error);
+      toast.error("Gửi thông báo thất bại, vui lòng thử lại sau");
+    }
   };
 
   if (selectedRoom) {
@@ -153,6 +183,12 @@ const HostelDetail = ({
               </div>
             ))}
         </div>
+        <div className="flex text-sm font-semibold gap-2 col-span-2 mt-2">
+          <span className="text-gray-600">Hạn nộp tiền phòng:</span>
+          <span className="text-right">{`Ngày ${dayjs(hostel.deadline).format(
+            "DD"
+          )} hàng tháng`}</span>
+        </div>
         <div className="flex gap-2 text-sm font-semibold mt-2">
           <span className="text-gray-700">Địa chỉ:</span>
           <span>{hostel.address}</span>
@@ -163,9 +199,18 @@ const HostelDetail = ({
       <div className="flex justify-between">
         <h3 className="text-md font-semibold mb-2">Danh sách phòng</h3>
         {checkIsOwner(hostelDetail?.data.hostel.ownerId) && (
-          <Button size="small" type="primary" onClick={openAddRoom}>
-            Thêm phòng
-          </Button>
+          <div className="flex gap-4">
+            <Button size="small" type="primary" onClick={openAddRoom}>
+              Thêm phòng
+            </Button>
+            <Button
+              size="small"
+              type="primary"
+              onClick={() => setNotiModalOpen(true)}
+            >
+              Gửi thông báo
+            </Button>
+          </div>
         )}
       </div>
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
@@ -187,6 +232,8 @@ const HostelDetail = ({
               onEdit={openEditRoom}
               onDelete={handleDeleteRoom}
               onSelect={setSelectedRoom}
+              onLeave={handleLeaveRoom}
+              hostelId={hostel?._id}
               isOwner={checkIsOwner(hostelDetail?.data.hostel.ownerId)}
             />
           ))
@@ -202,6 +249,11 @@ const HostelDetail = ({
           setEditingRoom(null);
         }}
         onSave={handleSaveRoom}
+      />
+      <NotificationModal
+        open={notiModalOpen}
+        onClose={() => setNotiModalOpen(false)}
+        onSend={handleSendNoti}
       />
     </div>
   );

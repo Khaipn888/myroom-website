@@ -14,8 +14,7 @@ export default function GoogleLoginButton() {
         const { access_token } = tokenResponse;
 
         await axios.post(
-          // "https://phongtrocuatoi.onrender.com/api/auth/google",
-          "http://localhost:5000/api/auth/google",
+          `${process.env.NEXT_PUBLIC_API_BASE_URL}/auth/google`,
           { token: access_token },
           { withCredentials: true }
         );
@@ -23,9 +22,8 @@ export default function GoogleLoginButton() {
         toast.success("Đăng nhập thành công!");
         // TODO: redirect hoặc reload user state tại đây
         router.push("/");
-      } catch (error) {
-        toast.error("Đăng nhập thất bại!");
-        console.error(error);
+      } catch (error: any) {
+        toast.error(error.response.data.error);
       }
     },
     onError: () => {

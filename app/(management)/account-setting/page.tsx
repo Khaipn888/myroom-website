@@ -179,13 +179,13 @@ export default function AccountSettingsPage() {
             <div className="text-gray-600 text-xs font-semibold">
               Tổng số tin đăng
             </div>
-            <div className="font-semibold">15</div>
+            <div className="font-semibold">{user?.numberOfPost}</div>
           </div>
           <div className="flex flex-col items-center border border-gray-100 shadow rounded-lg p-5">
             <div className="text-gray-600 text-xs font-semibold">
               Số tin đã cho thuê
             </div>
-            <div className="font-semibold">4</div>
+            <div className="font-semibold">{user?.numberOfPostRented}</div>
           </div>
         </div>
 
@@ -218,7 +218,7 @@ export default function AccountSettingsPage() {
             </Form.Item>
 
             <Form.Item label="Email" name="email" rules={[{ type: "email" }]}>
-              <Input placeholder="example@email.com" />
+              <Input placeholder="example@email.com" disabled/>
             </Form.Item>
 
             <Form.Item label="Giới tính" name="gender">

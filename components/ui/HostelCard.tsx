@@ -4,6 +4,7 @@
 import React from "react";
 import { Card, Space, Popconfirm } from "antd";
 import { DeleteOutlined, EditOutlined } from "@ant-design/icons";
+import dayjs from "dayjs";
 
 // Nếu đã có interface Hostel và Service ở chỗ khác, import vào.
 // Còn không, bạn có thể giữ nguyên định nghĩa như dưới:
@@ -17,6 +18,7 @@ export interface Hostel {
   electricityPrice: number;
   waterPrice: number;
   services: { name: string; price: number; unit: string }[];
+  deadline: Date
 }
 
 interface HostelCardProps {
@@ -103,6 +105,10 @@ const HostelCard: React.FC<HostelCardProps> = ({
                 " " +
                 h.services[1]?.unit}
             </span>
+          </div>
+          <div className="flex font-semibold gap-2 col-span-2">
+            <span className="text-gray-600">Hạn nộp tiền phòng:</span>
+            <span className="text-right">{`Ngày ${dayjs(h.deadline).format("DD")} hàng tháng`}</span>
           </div>
           <div className="flex font-semibold gap-2 col-span-2">
             <span className="text-gray-600">Địa chỉ:</span>

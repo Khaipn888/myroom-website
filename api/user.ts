@@ -73,3 +73,21 @@ export const reportPost = async (data: any) => {
     throw error.response?.data || error.message || "Đã có lỗi xảy ra";
   }
 };
+
+export const leaveRoom = async (data: any) => {
+  try {
+    const res = await axiosInstance.post("/user/leave-room", data);
+    return res.data;
+  } catch (error: any) {
+    throw error.response?.data || error.message || "Đã có lỗi xảy ra";
+  }
+};
+
+export const sendNoti = async (data: any) => {
+  try {
+    const res = await axiosInstance.post("/user/send-noti", data);
+    return res.data;
+  } catch (error: any) {
+    throw error.response?.data || error.message || "Đã có lỗi xảy ra";
+  }
+};

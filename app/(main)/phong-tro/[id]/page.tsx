@@ -28,6 +28,8 @@ import { useState } from "react";
 import { checkIsSavedPost } from "@/utils/checkIsSavedPost";
 import { convertPrice } from "@/utils/convertPrice";
 import ReportPostModal from "@/components/ui/ReportPostModal";
+import PostCommentBox from "@/components/ui/PostCommentBox";
+import { getAllComments } from "@/api/comment";
 
 export default function PostDetailPage() {
   const params = useParams();
@@ -35,6 +37,7 @@ export default function PostDetailPage() {
   const router = useRouter();
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [isReportModalVisible, setIsReportModalVisible] = useState(false);
+  const [isCommentOpen, setIsCommentOpen] = useState(false);
   const user = useUserStore((state) => state.user);
   const setUser = useUserStore((state) => state.setUser);
   const isSaved = checkIsSavedPost(id as string);
@@ -45,6 +48,16 @@ export default function PostDetailPage() {
   } = useQuery<any>({
     queryKey: ["getDetailPost", id],
     queryFn: () => getDetailPost(id as string),
+    placeholderData: keepPreviousData,
+    staleTime: 1000 * 60,
+  });
+
+  const {
+    data: allComments,
+    refetch: refetchGetAllComment,
+  } = useQuery<any>({
+    queryKey: ["getAllComment", id],
+    queryFn: () => getAllComments(id as string),
     placeholderData: keepPreviousData,
     staleTime: 1000 * 60,
   });
@@ -149,6 +162,24 @@ export default function PostDetailPage() {
           {/* Hành động: lưu, chia sẻ, báo cáo */}
           <div className="flex items-center gap-4 text-sm">
             <button
+              onClick={() => setIsCommentOpen((v) => !v)}
+              className="flex items-center gap-1 text-gray-600 hover:text-blue-600 cursor-pointer"
+            >
+              <svg
+                width="18"
+                height="18"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth={1.5}
+              >
+                <path d="M5 13l-2 2V4a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2v10a2 2 0 0 1-2 2H6l-1-1z" />
+              </svg>
+              Bình luận
+              <span className="ml-1 font-semibold">
+                {allComments?.data?.length || 0}
+              </span>
+            </button>
+            <button
               onClick={handleToggleSave}
               className="flex items-center gap-1 text-gray-600 hover:text-red-500 cursor-pointer"
             >
@@ -178,6 +209,15 @@ export default function PostDetailPage() {
               <FlagOutlined /> Báo xấu
             </button>
           </div>
+          {/* Phần commemt */}
+          <PostCommentBox
+            postId={id as string}
+            user={user}
+            isShow={isCommentOpen}
+            onRequestLogin={() => setIsModalVisible(true)}
+            comments={allComments?.data || []}
+            refetchComments={refetchGetAllComment}
+          />
 
           {/* Mô tả chi tiết */}
           <div>
@@ -209,11 +249,11 @@ export default function PostDetailPage() {
               alt={"avatar"}
               width={40}
               height={40}
-              className="rounded-full object-cover"
+              className="rounded-full object-cover aspect-square"
             />
             <div>
               <p className="font-semibold">{postDetail?.data?.user.name}</p>
-              <p className="text-xs text-gray-500">25 Tin đăng</p>
+              <p className="text-xs text-gray-500">{`${user?.numberOfPost} tin đăng`}</p>
             </div>
           </div>
           <div className="flex text-sm gap-2 items-center">

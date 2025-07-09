@@ -1,14 +1,9 @@
 "use client";
 
 import React, { useEffect } from "react";
-import {
-  Modal,
-  Form,
-  Input,
-  InputNumber,
-} from "antd";
-import {
-} from "@ant-design/icons";
+import { Modal, Form, Input, InputNumber, DatePicker } from "antd";
+import {} from "@ant-design/icons";
+import dayjs from "dayjs";
 
 interface Service {
   name: string;
@@ -22,6 +17,7 @@ interface RoomFormModalProps {
     name: string;
     price: number;
     area: number;
+    rentDate: Date;
     electricityPrice: number;
     waterPrice: number;
     services: Service[];
@@ -51,6 +47,7 @@ const RoomFormModal: React.FC<RoomFormModalProps> = ({
         name: room?.name || "",
         price: room?.price ?? undefined,
         area: room?.area ?? undefined,
+        rentDate: dayjs(room?.rentDate) ?? undefined,
       });
     }
   }, [visible, room, form]);
@@ -96,6 +93,14 @@ const RoomFormModal: React.FC<RoomFormModalProps> = ({
           rules={[{ required: true, message: "Vui lòng nhập diện tích" }]}
         >
           <InputNumber style={{ width: "100%" }} min={0} />
+        </Form.Item>
+
+        <Form.Item
+          name="rentDate"
+          label="Ngày thuê phòng"
+          rules={[{ required: true, message: "Vui lòng chọn ngày thuê phòng" }]}
+        >
+          <DatePicker style={{ width: "100%" }} format="YYYY-MM-DD" placeholder="Ngày thuê phòng"/>
         </Form.Item>
       </Form>
     </Modal>
